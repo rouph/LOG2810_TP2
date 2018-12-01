@@ -114,19 +114,21 @@ public class Graph {
                 break;
             }
         }
-        int compt = 0;
-        for (int j = 0; j < finiteNodes.size(); j++) {
-            for (int i = 0; i < nodeOfString.getString().length(); i++) {
-                if (nodeOfString.getString().length() <= finiteNodes.get(j).getString().length()) {
-                    if (nodeOfString.getString().charAt(i) == finiteNodes.get(j).getString().charAt(i)) {
-                        compt += 1;
+        if (!(nodeOfString.getString() == "")) {
+            int compt = 0;
+            for (int j = 0; j < finiteNodes.size(); j++) {
+                for (int i = 0; i < nodeOfString.getString().length(); i++) {
+                    if (nodeOfString.getString().length() <= finiteNodes.get(j).getString().length()) {
+                        if (nodeOfString.getString().charAt(i) == finiteNodes.get(j).getString().charAt(i)) {
+                            compt += 1;
+                        }
                     }
                 }
+                if (compt == nodeOfString.getString().length()) {
+                    FiniteStateList.add(finiteNodes.get(j).getString());
+                }
+                compt = 0;
             }
-            if (compt == nodeOfString.getString().length()){
-                FiniteStateList.add(finiteNodes.get(j).getString());
-            }
-            compt = 0;
         }
         return FiniteStateList;
     }
