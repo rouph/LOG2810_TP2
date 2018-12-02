@@ -26,7 +26,6 @@ public class Main {
 
         JTextField f = new JTextField(10);
         f.setVisible(false);
-        AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f) ;
 
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -60,6 +59,8 @@ public class Main {
                     f.setVisible(true);
                     path.setVisible(false);
                     labelPath.setText("enter text:");
+                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f, path.getText()) ;
+
                 }
             }
         });
@@ -124,13 +125,13 @@ class AutoSuggestor {
     private final Color suggestionsTextColor;
     private final Color suggestionFocusedColor;
 
-    public AutoSuggestor(JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
+    public AutoSuggestor(JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity, String File) {
         this.textField = textField;
         this.suggestionsTextColor = textColor;
         this.container = mainWindow;
         this.suggestionFocusedColor = suggestionFocusedColor;
         this.textField.getDocument().addDocumentListener(documentListener);
-        g.readFromFile("./src/lexique5.txt");
+        g.readFromFile(File);
         setDictionary(words);
 
         typedWord = "";
