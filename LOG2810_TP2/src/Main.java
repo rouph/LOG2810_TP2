@@ -175,7 +175,7 @@ class AutoSuggestor {
         //used to calcualte size of JWindow as new Jlabels are added
         tW = 0;
         tH = 0;
-        setDictionary(g.displayFiniteState(typedWord));
+        setDictionary(g.displayFiniteState(typedWord,false));
 
         if (dictionary.isEmpty()) {
             if (autoSuggestionPopUpWindow.isVisible()) {
@@ -203,6 +203,7 @@ class AutoSuggestor {
         if (text.contains(" ")) {
             int tmp = text.lastIndexOf(" ");
             if (tmp >= currentIndexOfSpace) {
+                g.addUsed(text.substring(currentIndexOfSpace,tmp));
                 currentIndexOfSpace = tmp;
                 wordBeingTyped = text.substring(text.lastIndexOf(" "));
             }

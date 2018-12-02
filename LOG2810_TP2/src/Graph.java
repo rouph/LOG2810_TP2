@@ -92,31 +92,39 @@ public class Graph {
         }
     }
 
-  public ArrayList<String> displayFiniteState(String e) {
+  public ArrayList<String> displayFiniteState(String e, boolean withNbrUsed) {
       words.clear();
       if(!e.isEmpty()){
           Node starte = getStartingNode(e);
           if(starte != null)
           for (Node next : starte.getNexts()) {
-              displayFiniteState(e, next);
+              displayFiniteState(e, next, withNbrUsed);
           }
       }
       return words;
   }
-    public void displayFiniteState(String e, Node node) {
+    public void displayFiniteState(String e, Node node, boolean withNbrUsed) {
       if(node != null) {
           e += node.getName();
 
           if (node.getFiniteState()) {
+              String temp = e;
+              if(withNbrUsed)
+                  e += " is used " + node.getUsed()+" time";
+
               words.add(e);
+              e = temp;
           }
           for (Node next : node.getNexts()) {
-              displayFiniteState(e, next);
+              displayFiniteState(e, next, withNbrUsed);
           }
       }
     }
 
     public Node getStartingNode(String s){
+        if(s.charAt(0) == start.getName()) {
+            return start;
+        }
         for(Node next : start.getNexts())
         {
             Node temp = getStartingNode(next,s);
@@ -138,5 +146,13 @@ public class Graph {
         }
         return null;
 
+    }
+    public void addUsed(String e){
+        Node last = getStartingNode(e);
+        if(last!= null){
+            last.addUsed();
+        }
+        displayFiniteState(" ", true);
+        int debug = 0;
     }
 }
