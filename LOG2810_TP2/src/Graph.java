@@ -94,9 +94,11 @@ public class Graph {
 
   public ArrayList<String> displayFiniteState(String e) {
       words.clear();
-      Node starte = getStartingNode(e);
-      for (Node next : starte.getNexts()) {
-          displayFiniteState(e, next);
+      if(!e.isEmpty()){
+          Node starte = getStartingNode(e);
+          for (Node next : starte.getNexts()) {
+              displayFiniteState(e, next);
+          }
       }
       return words;
   }
