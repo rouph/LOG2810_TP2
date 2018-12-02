@@ -1,21 +1,8 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
 import java.util.ArrayList;
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JWindow;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -26,30 +13,83 @@ import javax.swing.event.DocumentListener;
 public class Main {
 
     public Main() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = screenSize.height * 2 / 3;
+        int width = screenSize.width * 2 / 3;
 
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       // frame.setPreferredSize(new Dimension(500, 500));
+        JTextField path = new JTextField(10);
+        JButton enter = new JButton("enter");
 
 
         JTextField f = new JTextField(10);
-
+        f.setVisible(false);
         AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f) ;
 
-        JPanel p = new JPanel();
+        JPanel p = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.insets = new Insets(10, 10, 10, 10);
 
-        p.add(f);
+        JLabel labelPath = new JLabel("Enter Path: ");
+
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        p.add(labelPath, constraints);
+
+        constraints.gridx = 1;
+        p.add(path,constraints);
+        p.add(f,constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        p.add(enter,constraints);
+
 
         frame.add(p);
 
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
+        enter.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                File fichier = new File(path.getText());
+                if (fichier.exists()) {
+                    f.setVisible(true);
+                    path.setVisible(false);
+                    labelPath.setText("enter text:");
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
+
+        /*JTextField path = new JTextField();
+        JButton enter = new JButton("enter");
+        launcher.setLayout(new BorderLayout());
+        launcher.add(path, BorderLayout.NORTH);
+        launcher.add(enter, BorderLayout.CENTER);
+
+        launcher.pack();
+        launcher.setVisible(true);
+        enter.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                File fichier = new File(path.getText());
+                if(fichier.exists()){
+                    launcher.dispose();
+                    new Main();
+                }
+
+            }
+        });*/
+        new Main();
         //SwingUtilities.invokeLater(new Runnable() {
         //   //   @Override
         //  public void run() {
-        new Main();
+        //new Main();
         // }
         //});
     }
@@ -135,15 +175,16 @@ class AutoSuggestor {
         tW = 0;
         tH = 0;
         setDictionary(g.displayFiniteState(typedWord));
-        boolean added = wordTyped(typedWord);
 
-        if (!added) {
+        if (dictionary.isEmpty()) {
             if (autoSuggestionPopUpWindow.isVisible()) {
                 autoSuggestionPopUpWindow.setVisible(false);
             }
         } else {
+            fillSuggestionBox();
             showPopUpWindow();
             setFocusToTextField();
+
         }
     }
 
@@ -184,8 +225,8 @@ class AutoSuggestor {
         autoSuggestionPopUpWindow.setSize(tW, tH);
         autoSuggestionPopUpWindow.setVisible(true);
 
-        int windowX = 0;
-        int windowY = 0;
+        int windowX = 200;
+        int windowY = 200;
 
         windowX = container.getX() + textField.getX() + 5;
         if (suggestionsPanel.getHeight() > autoSuggestionPopUpWindow.getMinimumSize().height) {
@@ -227,29 +268,11 @@ class AutoSuggestor {
         dictionary.add(word);
     }
 
-    boolean wordTyped(String typedWord) {
+    void fillSuggestionBox() {
 
-        if (typedWord.isEmpty()) {
-            return false;
-        }
-        //System.out.println("Typed word: " + typedWord);
-
-        boolean suggestionAdded = false;
-
-        for (String word : dictionary) {//get words in the dictionary which we added
-            boolean fullymatches = true;
-            for (int i = 0; i < typedWord.length(); i++) {//each string in the word
-                if (!typedWord.toLowerCase().startsWith(String.valueOf(word.toLowerCase().charAt(i)), i)) {//check for match
-                    fullymatches = false;
-                    break;
-                }
-            }
-            if (fullymatches) {
+        for (String word : dictionary) {
                 addWordToSuggestions(word);
-                suggestionAdded = true;
             }
-        }
-        return suggestionAdded;
     }
 }
 
