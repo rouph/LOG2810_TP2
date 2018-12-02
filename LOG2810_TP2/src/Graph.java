@@ -8,39 +8,27 @@ import java.util.List;
 public class Graph {
     private List<Node> nodes = new ArrayList<>();
     private List<Node> finiteNodes = new ArrayList<>();
-    private boolean hasPrevious = false;
     private Node start = new Node();
 
     public Graph() {
     }
 
-    public void samePrevious(Node i, Node c) {
-        if (i.getPrevious().getName() == c.getPrevious().getName()) {
-            hasPrevious = true;
-        } else {
-            hasPrevious = false;
-            return;
-        }
-        if (i.getPrevious().getName() == i.getName()) {
-            return;
-        }
-        samePrevious(i.getPrevious(), c.getPrevious());
+    public boolean samePrevious(Node i, Node c) {
+
+        return i.getString().equals(c.getString());
     }
 
     public void addChild(Node c) {
 
-        for (int i = 0; i < nodes.size(); i++) {
-            samePrevious(nodes.get(i), c);
-            if (nodes.get(i).getPosition() == c.getPosition()
-                    && nodes.get(i).getName() == c.getName()
-                    && hasPrevious) {
+        for (Node node : nodes) {
+            if (samePrevious(node, c))
                 return;
-            }
         }
         nodes.add(c);
     }
 
     public void readFromFile(String filePath) {
+
         try {
             start.setPrevious(start);
             File fichier = new File(filePath);
@@ -50,7 +38,7 @@ public class Graph {
                 List<Node> tmpNodes = new ArrayList<>();
                 for (int i = 0; i < lexique.length(); i++) {
                     if (i == lexique.length() - 1) {
-                        Node finiteNode = new Node(i, lexique.charAt(i), tmpNodes.get(i - 1).getString() + lexique.charAt(i), true);
+                        Node finiteNode = new Node(tmpNodes.get(i - 1).getString() + lexique.charAt(i), true);
                         tmpNodes.add(finiteNode);
                         if (i != 0) {
                             finiteNode.setPrevious(tmpNodes.get(i - 1));
@@ -62,9 +50,9 @@ public class Graph {
                     } else {
                         Node node = new Node();
                         if (i == 0) {
-                            node = new Node(i, lexique.charAt(i), start.getString() + lexique.charAt(i), false);
+                            node = new Node(start.getString() + lexique.charAt(i), false);
                         } else {
-                            node = new Node(i, lexique.charAt(i), tmpNodes.get(i - 1).getString() + lexique.charAt(i), false);
+                            node = new Node(tmpNodes.get(i - 1).getString() + lexique.charAt(i), false);
                         }
                         tmpNodes.add(node);
                         if (i != 0) {
@@ -74,9 +62,7 @@ public class Graph {
 
                         addChild(node);
                     }
-                    //System.out.println(c);
                 }
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,22 +71,22 @@ public class Graph {
 
     public void displayAutomate() {
 
-        for (int i = 0; i < nodes.size(); i++) {
-            //System.out.println(nodes.get(i).getName());
-            if (nodes.get(i).getFiniteState()) {
-                System.out.println("Finite State");
-                System.out.println(nodes.get(i).getName());
-            }
-        }
-
+        for (Node i : nodes)
+            System.out.println(i.getString());
     }
 
     public void displayWords() {
 
-        for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i).getFiniteState()) {
-                System.out.println(nodes.get(i).getString());
-            }
+        for (Node i : nodes) {
+            if (i.getFiniteState())
+                System.out.println(i.getString());
+        }
+    }
+
+    public void displayPrevious(){
+
+        for (Node i : nodes){
+            System.out.println(i.getPrevious().getString());
         }
     }
 
@@ -108,24 +94,24 @@ public class Graph {
 
         Node nodeOfString = new Node();
         List<String> FiniteStateList = new ArrayList<>();
-        for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i).getString().equals(e)) {
-                nodeOfString = nodes.get(i);
+        for (Node i : nodes) {
+            if (i.getString().equals(e)) {
+                nodeOfString = i;
                 break;
             }
         }
-        if (!(nodeOfString.getString() == "")) {
+        if (!(nodeOfString.getString().equals(""))) {
             int compt = 0;
-            for (int j = 0; j < finiteNodes.size(); j++) {
+            for (Node j : finiteNodes) {
                 for (int i = 0; i < nodeOfString.getString().length(); i++) {
-                    if (nodeOfString.getString().length() <= finiteNodes.get(j).getString().length()) {
-                        if (nodeOfString.getString().charAt(i) == finiteNodes.get(j).getString().charAt(i)) {
+                    if (nodeOfString.getString().length() <= j.getString().length()) {
+                        if (nodeOfString.getString().charAt(i) == j.getString().charAt(i)) {
                             compt += 1;
                         }
                     }
                 }
                 if (compt == nodeOfString.getString().length()) {
-                    FiniteStateList.add(finiteNodes.get(j).getString());
+                    FiniteStateList.add(j.getString());
                 }
                 compt = 0;
             }
