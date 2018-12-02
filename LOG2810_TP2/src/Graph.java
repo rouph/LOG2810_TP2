@@ -8,36 +8,38 @@ import java.util.List;
 public class Graph {
     private List<Node> nodes = new ArrayList<>();
     private List<Node> finiteNodes = new ArrayList<>();
+
     private boolean hasPrevious = false;
     private Node start = new Node();
 
+    private ArrayList<String> words = new ArrayList<>();
     public Graph() {
     }
 
-    public void samePrevious(Node i, Node c) {
-        if (i.getPrevious().getName() == c.getPrevious().getName()) {
-            hasPrevious = true;
-        } else {
-            hasPrevious = false;
-            return;
-        }
-        if (i.getPrevious().getName() == i.getName()) {
-            return;
-        }
-        samePrevious(i.getPrevious(), c.getPrevious());
-    }
+    public boolean addChild(Node n, String s) {
 
-    public void addChild(Node c) {
+        boolean finitstate = (s.length() == 2);
 
-        for (int i = 0; i < nodes.size(); i++) {
-            samePrevious(nodes.get(i), c);
-            if (nodes.get(i).getPosition() == c.getPosition()
-                    && nodes.get(i).getName() == c.getName()
-                    && hasPrevious) {
-                return;
+        if(n.getName() == s.charAt(0) ){
+            if(!n.hasNext() ) {
+                if( s.length() > 1){
+                    n.addNext(new Node(0,s.charAt(1),null,finitstate));
+                    addChild(n.getNexts().get(0), s.substring(1));
+                } return true;
+            }else{
+                boolean added = false;
+                for(Node next : n.getNexts()){
+                    if(!added)
+                        added = addChild(next, s.substring(1));
+                }
+                if(!added){
+                    n.addNext(new Node(0,s.charAt(1),null,finitstate));
+                    addChild(n.getNexts().get(n.getNexts().size()-1), s.substring(1));
+                }
+                return true;
             }
         }
-        nodes.add(c);
+       return false;
     }
 
     public void readFromFile(String filePath) {
@@ -46,38 +48,24 @@ public class Graph {
             File fichier = new File(filePath);
             BufferedReader data = new BufferedReader(new FileReader(fichier));
             String lexique;
+            // fiye a33mela optimisation hn maa hashtable ta nle2e lstarting point
             while ((lexique = data.readLine()) != null) {
-                List<Node> tmpNodes = new ArrayList<>();
-                for (int i = 0; i < lexique.length(); i++) {
-                    if (i == lexique.length() - 1) {
-                        Node finiteNode = new Node(i, lexique.charAt(i), tmpNodes.get(i - 1).getString() + lexique.charAt(i), true);
-                        tmpNodes.add(finiteNode);
-                        if (i != 0) {
-                            finiteNode.setPrevious(tmpNodes.get(i - 1));
-                        } else
-                            finiteNode.setPrevious(start);
-
-                        addChild(finiteNode);
-                        finiteNodes.add(finiteNode);
-                    } else {
-                        Node node = new Node();
-                        if (i == 0) {
-                            node = new Node(i, lexique.charAt(i), start.getString() + lexique.charAt(i), false);
-                        } else {
-                            node = new Node(i, lexique.charAt(i), tmpNodes.get(i - 1).getString() + lexique.charAt(i), false);
-                        }
-                        tmpNodes.add(node);
-                        if (i != 0) {
-                            node.setPrevious(tmpNodes.get(i - 1));
-                        } else
-                            node.setPrevious(start);
-
-                        addChild(node);
-                    }
-                    //System.out.println(c);
+                if(!start.hasNext()) {
+                    Node next = new Node(0, lexique.charAt(0), null, false);
+                    start.addNext(next);
                 }
-
+                boolean added = false;
+                for(Node next : start.getNexts()) {
+                    added = addChild(next, lexique);
+                    if (added) break;
+                }
+                if(!added){
+                    Node next = new Node(0, lexique.charAt(0), null, false);
+                    start.addNext(next);
+                    addChild(next,lexique);
+                }
             }
+            int debug=0;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,33 +92,48 @@ public class Graph {
         }
     }
 
-    public List<String> displayFiniteState(String e) {
+  public ArrayList<String> displayFiniteState(String e) {
+      words.clear();
+      Node starte = getStartingNode(e);
+      for (Node next : starte.getNexts()) {
+          displayFiniteState(e, next);
+      }
+      return words;
+  }
+    public void displayFiniteState(String e, Node node) {
+      if(node != null) {
+          e += node.getName();
 
-        Node nodeOfString = new Node();
-        List<String> FiniteStateList = new ArrayList<>();
-        for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i).getString().equals(e)) {
-                nodeOfString = nodes.get(i);
-                break;
-            }
-        }
-        if (!(nodeOfString.getString() == "")) {
-            int compt = 0;
-            for (int j = 0; j < finiteNodes.size(); j++) {
-                for (int i = 0; i < nodeOfString.getString().length(); i++) {
-                    if (nodeOfString.getString().length() <= finiteNodes.get(j).getString().length()) {
-                        if (nodeOfString.getString().charAt(i) == finiteNodes.get(j).getString().charAt(i)) {
-                            compt += 1;
-                        }
-                    }
-                }
-                if (compt == nodeOfString.getString().length()) {
-                    FiniteStateList.add(finiteNodes.get(j).getString());
-                }
-                compt = 0;
-            }
-        }
-        return FiniteStateList;
+          if (node.getFiniteState()) {
+              words.add(e);
+          }
+          for (Node next : node.getNexts()) {
+              displayFiniteState(e, next);
+          }
+      }
     }
 
+    public Node getStartingNode(String s){
+        for(Node next : start.getNexts())
+        {
+            Node temp = getStartingNode(next,s);
+            if(temp != null)
+                return temp;
+        }
+        return null;
+    }
+    public Node getStartingNode(Node n, String s){
+        if(n.getName() == s.charAt(0) && s.length() > 1) {
+            Node toReturn = null;
+            for (Node next : n.getNexts()) {
+                toReturn = getStartingNode(next, s.substring(1));
+                if(toReturn!= null) return toReturn;
+            }
+        }
+        else if(n.getName() == s.charAt(0) && s.length() == 1){
+            return  n;
+        }
+        return null;
+
+    }
 }

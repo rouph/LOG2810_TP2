@@ -24,5 +24,11 @@ public class Node {
     public Node setPrevious(Node previous) {return this.previous = previous;}
     public String getString(){return mot;}
     public String setString(String mot){return this.mot = mot;}
+    /////////////////////////////////
+
+    List<Node> nexts = new ArrayList<>();
+    public void addNext(Node next) {nexts.add(next);}
+    public List<Node> getNexts() {return nexts;}
+    public boolean hasNext() {return nexts.size() >0;}
 
 }
