@@ -122,7 +122,7 @@ public class Graph {
     }
 
     public Node getStartingNode(String s){
-        if(s.charAt(0) == start.getName()) {
+        if(s.charAt(0) == start.getName() && s.length() ==1) {
             return start;
         }
         for(Node next : start.getNexts())

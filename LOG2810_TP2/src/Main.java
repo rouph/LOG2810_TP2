@@ -203,7 +203,11 @@ class AutoSuggestor {
         if (text.contains(" ")) {
             int tmp = text.lastIndexOf(" ");
             if (tmp >= currentIndexOfSpace) {
-                g.addUsed(text.substring(currentIndexOfSpace,tmp));
+                if(currentIndexOfSpace!=tmp) {
+                    String typedWord = text.substring(currentIndexOfSpace, tmp);
+                    typedWord = typedWord.trim();
+                    g.addUsed(typedWord);
+                }
                 currentIndexOfSpace = tmp;
                 wordBeingTyped = text.substring(text.lastIndexOf(" "));
             }
