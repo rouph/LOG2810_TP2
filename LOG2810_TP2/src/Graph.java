@@ -96,6 +96,7 @@ public class Graph {
       words.clear();
       if(!e.isEmpty()){
           Node starte = getStartingNode(e);
+          if(starte != null)
           for (Node next : starte.getNexts()) {
               displayFiniteState(e, next);
           }
