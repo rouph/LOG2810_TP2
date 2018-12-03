@@ -46,14 +46,14 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        //SwingUtilities.invokeLater(new Runnable() {
-        //   //   @Override
-        //  public void run() {
-        new Main();
-        // }
-        //});
-    }
-}
+                Graph g = new Graph();
+                g.readFromFile("./src/lexique 1.txt");
+                g.displayAutomate();
+                //g.displayWords();
+                //g.displayPrevious();
+                //System.out.println(g.displayFiniteState("ch"));
+            }
+        }
 
 class AutoSuggestor {
 

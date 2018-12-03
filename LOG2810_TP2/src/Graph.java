@@ -74,11 +74,11 @@ public class Graph {
     public void displayAutomate() {
 
         for (int i = 0; i < nodes.size(); i++) {
-            //System.out.println(nodes.get(i).getName());
-            if (nodes.get(i).getFiniteState()) {
+            System.out.println(nodes.get(i).getName());
+            /*if (nodes.get(i).getFiniteState()) {
                 System.out.println("Finite State");
                 System.out.println(nodes.get(i).getName());
-            }
+            }*/
         }
 
     }
