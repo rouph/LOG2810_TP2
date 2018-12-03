@@ -18,28 +18,21 @@ public class Graph {
 
     public boolean addChild(Node n, String s) {
 
-        boolean finitstate = (s.length() == 2);
+        boolean finitstate = (s.length() == 1);
+        boolean added = false;
+       if(s.length() > 0) {
 
-        if(n.getName() == s.charAt(0) ){
-            if(!n.hasNext() ) {
-                if( s.length() > 1){
-                    n.addNext(new Node(0,s.charAt(1),null,finitstate));
-                    addChild(n.getNexts().get(0), s.substring(1));
-                } return true;
-            }else{
-                boolean added = false;
-                for(Node next : n.getNexts()){
-                    if(!added)
-                        added = addChild(next, s.substring(1));
-                }
-                if(!added){
-                    n.addNext(new Node(0,s.charAt(1),null,finitstate));
-                    addChild(n.getNexts().get(n.getNexts().size()-1), s.substring(1));
-                }
-                return true;
-            }
-        }
-       return false;
+           for (Node next : n.getNexts()) {
+               if (next.getName() == s.charAt(0))
+                   added = addChild(next, s.substring(1));
+           }
+           if (!added) {
+               n.addNext(new Node(0, s.charAt(0), null, finitstate));
+               addChild(n.getNexts().get(n.getNexts().size() - 1), s.substring(1));
+               return true;
+           }
+       }
+       return added;
     }
 
     public void readFromFile(String filePath) {
@@ -48,22 +41,8 @@ public class Graph {
             File fichier = new File(filePath);
             BufferedReader data = new BufferedReader(new FileReader(fichier));
             String lexique;
-            // fiye a33mela optimisation hn maa hashtable ta nle2e lstarting point
             while ((lexique = data.readLine()) != null) {
-                if(!start.hasNext()) {
-                    Node next = new Node(0, lexique.charAt(0), null, false);
-                    start.addNext(next);
-                }
-                boolean added = false;
-                for(Node next : start.getNexts()) {
-                    added = addChild(next, lexique);
-                    if (added) break;
-                }
-                if(!added){
-                    Node next = new Node(0, lexique.charAt(0), null, false);
-                    start.addNext(next);
-                    addChild(next,lexique);
-                }
+                addChild(start,lexique);
             }
             int debug=0;
         } catch (IOException e) {
