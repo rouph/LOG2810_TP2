@@ -7,9 +7,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-/**
- * @author David
- */
 public class Main {
 
     public Main() {
@@ -46,7 +43,6 @@ public class Main {
         constraints.anchor = GridBagConstraints.CENTER;
         p.add(enter,constraints);
 
-
         frame.add(p);
 
         frame.pack();
@@ -68,31 +64,12 @@ public class Main {
 
     public static void main(String[] args) {
 
-        /*JTextField path = new JTextField();
-        JButton enter = new JButton("enter");
-        launcher.setLayout(new BorderLayout());
-        launcher.add(path, BorderLayout.NORTH);
-        launcher.add(enter, BorderLayout.CENTER);
-
-        launcher.pack();
-        launcher.setVisible(true);
-        enter.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                File fichier = new File(path.getText());
-                if(fichier.exists()){
-                    launcher.dispose();
-                    new Main();
-                }
-
-            }
-        });*/
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+         public void run() {
         new Main();
-        //SwingUtilities.invokeLater(new Runnable() {
-        //   //   @Override
-        //  public void run() {
-        //new Main();
-        // }
-        //});
+         }
+        });
     }
 }
 
@@ -145,6 +122,28 @@ class AutoSuggestor {
         suggestionsPanel = new JPanel();
         suggestionsPanel.setLayout(new GridLayout(0, 1));
         suggestionsPanel.setBackground(popUpBackground);
+        KeyListener keyListener = new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                checkForAndShowSuggestions();
+            }
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                if(keyEvent.getKeyCode() == KeyEvent.VK_ENTER){
+                    g.addUsed(textField.getText().trim());
+                    textField.setText("");
+
+                }
+                else
+                    checkForAndShowSuggestions();
+                //textField.requestFocusInWindow() ;
+            }
+            @Override
+            public void keyTyped(KeyEvent keyEvent) {
+                checkForAndShowSuggestions();
+            }
+        };
+        //this.textField.addKeyListener(  keyListener );
 
     }
 
@@ -203,11 +202,6 @@ class AutoSuggestor {
         if (text.contains(" ")) {
             int tmp = text.lastIndexOf(" ");
             if (tmp >= currentIndexOfSpace) {
-                if(currentIndexOfSpace!=tmp) {
-                    String typedWord = text.substring(currentIndexOfSpace, tmp);
-                    typedWord = typedWord.trim();
-                    g.addUsed(typedWord);
-                }
                 currentIndexOfSpace = tmp;
                 wordBeingTyped = text.substring(text.lastIndexOf(" "));
             }

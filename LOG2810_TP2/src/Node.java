@@ -10,7 +10,7 @@ public class Node {
         this.isFiniteState = state;
     }
     private int numberOfTimeUsed = 0;
-    private int mostRecently = 0;
+    private boolean mostRecently = false;
     private int position = 0;
     private boolean isFiniteState;
     private Node previous;
@@ -37,4 +37,8 @@ public class Node {
     public int hashCode(){
         return name.hashCode();
     }
+
+    public void setMostRecently(){mostRecently = true;}
+    public void resetMostRecently(){mostRecently = false;}
+    public boolean isSetMostRecently(){return mostRecently;}
 }
