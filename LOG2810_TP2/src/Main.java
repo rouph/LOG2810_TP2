@@ -9,6 +9,7 @@ import javax.swing.event.DocumentListener;
 
 public class Main {
 
+    private Graph g = new Graph();
     public Main() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int height = screenSize.height * 2 / 3;
@@ -19,8 +20,13 @@ public class Main {
        // frame.setPreferredSize(new Dimension(500, 500));
         JTextField path = new JTextField(10);
         JButton enter = new JButton("enter");
-
-
+        JButton displayLabels = new JButton("displayLabels");
+        displayLabels.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                g.showLabels();
+            }
+        });
+        displayLabels.setVisible(false);
         JTextField f = new JTextField(10);
         f.setVisible(false);
 
@@ -42,7 +48,7 @@ public class Main {
         constraints.gridy = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         p.add(enter,constraints);
-
+        p.add(displayLabels,constraints);
         frame.add(p);
 
         frame.pack();
@@ -54,8 +60,10 @@ public class Main {
                 if (fichier.exists()) {
                     f.setVisible(true);
                     path.setVisible(false);
+                    displayLabels.setVisible(true);
+                    enter.setVisible(false);
                     labelPath.setText("enter text:");
-                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f, path.getText()) ;
+                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f, path.getText(),g) ;
 
                 }
             }
@@ -67,7 +75,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
          public void run() {
-        new Main();
+            new Main();
          }
         });
     }
@@ -82,7 +90,7 @@ class AutoSuggestor {
     private String typedWord;
     private final ArrayList<String> dictionary = new ArrayList<>();
     private int currentIndexOfSpace, tW, tH;
-    Graph g = new Graph();
+    private final Graph g ;
     private DocumentListener documentListener = new DocumentListener() {
         @Override
         public void insertUpdate(DocumentEvent de) {
@@ -102,12 +110,20 @@ class AutoSuggestor {
     private final Color suggestionsTextColor;
     private final Color suggestionFocusedColor;
 
-    public AutoSuggestor(JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity, String File) {
+    public AutoSuggestor(JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity, String File,Graph g) {
         this.textField = textField;
         this.suggestionsTextColor = textColor;
         this.container = mainWindow;
         this.suggestionFocusedColor = suggestionFocusedColor;
+        this.g = g;
         this.textField.getDocument().addDocumentListener(documentListener);
+        this.textField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                g.addUsed(textField.getText().trim());
+                textField.setText("");
+            }
+        });
+
         g.readFromFile(File);
         setDictionary(words);
 
@@ -122,28 +138,7 @@ class AutoSuggestor {
         suggestionsPanel = new JPanel();
         suggestionsPanel.setLayout(new GridLayout(0, 1));
         suggestionsPanel.setBackground(popUpBackground);
-        KeyListener keyListener = new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent keyEvent) {
-                checkForAndShowSuggestions();
-            }
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-                if(keyEvent.getKeyCode() == KeyEvent.VK_ENTER){
-                    g.addUsed(textField.getText().trim());
-                    textField.setText("");
 
-                }
-                else
-                    checkForAndShowSuggestions();
-                //textField.requestFocusInWindow() ;
-            }
-            @Override
-            public void keyTyped(KeyEvent keyEvent) {
-                checkForAndShowSuggestions();
-            }
-        };
-        //this.textField.addKeyListener(  keyListener );
 
     }
 

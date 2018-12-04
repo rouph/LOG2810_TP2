@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,7 +12,7 @@ public class Graph {
     private LinkedListQueue mostUsedNodes = new LinkedListQueue();
     private boolean hasPrevious = false;
     private Node start = new Node();
-
+    private String displayLabels ="";
     private ArrayList<String> words = new ArrayList<>();
 
     public Graph() {
@@ -89,12 +90,12 @@ public class Graph {
             e += node.getName();
 
             if (node.getFiniteState()) {
-                String temp = e;
+               // String temp = e;
                 if (withNbrUsed)
-                    e += " is used " + node.getUsed() + " time";
-
-                words.add(e);
-                e = temp;
+                    displayLabels += e + " is used " + node.getUsed() + " time and mos recently usedLabel: " + node.isSetMostRecently() +"\n";
+                else
+                    words.add(e);
+                //e = temp;
             }
             for (Node next : node.getNexts()) {
                 displayFiniteState(e, next, withNbrUsed);
@@ -134,11 +135,22 @@ public class Graph {
             last.addUsed();
             addMostUsed(last);
         }
-        displayFiniteState(" ", true);
         int debug = 0;
     }
 
     public void addMostUsed(Node item) {
         mostUsedNodes.push(item);
+    }
+    public void showLabels() {
+        displayFiniteState(" ", true);
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JTextArea textArea = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        frame.getContentPane().add(scrollPane);
+        textArea.setText(displayLabels);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 }
