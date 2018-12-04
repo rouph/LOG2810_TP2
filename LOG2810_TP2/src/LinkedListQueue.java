@@ -1,3 +1,5 @@
+// Ceci est une linkedlist (FIFO) personalise pour ce TD
+//elle peux accepter seulement 5 etats les plus recents
 
 public class LinkedListQueue
 {	
@@ -29,24 +31,21 @@ public class LinkedListQueue
 	private int size = 0;		//Nombre d'elements dans la file.
 	private Node last;	//Dernier element de la liste
 	
-	//Indique si la file est vide
+
 	public boolean empty() 
 	{ 
 		return size == 0; 
 	}
-	
-	//Retourne la taille de la file
+
 	public int size() 
 	{ 
 		return size; 
 	}
 
 	//Retire l'element en tete de file
-	//complexit� asymptotique: O(1)
 	public void pop(){
 		 if ( size > 1){
-			//le deuxieme element est maitenant considere comme le premier
-			 last.getNext().data.resetMostRecently();
+		 	last.getNext().data.resetMostRecently();
 			Node first = last.getNext().getNext();
 			last.setNext(first);
 			size--;
@@ -66,11 +65,11 @@ public class LinkedListQueue
 			while (tmp.getNext().data != item){
 				tmp = tmp.getNext();
 			}
-			Node test = tmp.getNext();
-			tmp.setNext(test.getNext());
-			test.setNext(last.getNext());
-			last.setNext(test);
-			last = test;
+			Node next = tmp.getNext();
+			tmp.setNext(next.getNext());
+			next.setNext(last.getNext());
+			last.setNext(next);
+			last = next;
 			return;
 		}
 		item.setMostRecently();
@@ -89,5 +88,4 @@ public class LinkedListQueue
 		}
 		size++;
 	}
-
 }

@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
-    private List<Etat> Etats = new ArrayList<>();
-    private List<Etat> finiteEtats = new ArrayList<>();
     private LinkedListQueue mostUsedEtats = new LinkedListQueue();
-    private boolean hasPrevious = false;
     private Etat start = new Etat();
     private StringBuilder displayLabels = new StringBuilder();
     private ArrayList<String> words = new ArrayList<>();
@@ -21,7 +18,7 @@ public class Graph {
 
     public boolean addChild(Etat n, String s) {
 
-        boolean finitstate = (s.length() == 1);
+        boolean finitestate = (s.length() == 1);
         boolean added = false;
         if (s.length() > 0) {
 
@@ -30,7 +27,7 @@ public class Graph {
                     added = addChild(next, s.substring(1));
             }
             if (!added) {
-                n.addNext(new Etat(s.charAt(0), finitstate));
+                n.addNext(new Etat(s.charAt(0), finitestate));
                 addChild(n.getNexts().get(n.getNexts().size() - 1), s.substring(1));
                 return true;
             }
