@@ -3,23 +3,23 @@ public class LinkedListQueue
 {	
 	// Un noeud de la file
 	@SuppressWarnings("hiding")
-	private class Etat
+	private class Node
 	{
-		private Node data;
-		private Etat next;
+		private Etat data;
+		private Node next;
 
-		public Etat(Node data, Etat next)
+		public Node(Etat data, Node next)
 		{
 			this.data = data;
 			this.next = next;
 		}
 
-		public void setNext(Etat next)
+		public void setNext(Node next)
 		{
 			this.next = next;
 		}
 
-		public Etat getNext()
+		public Node getNext()
 		{
 			return next;
 		}
@@ -27,7 +27,7 @@ public class LinkedListQueue
 	}
    
 	private int size = 0;		//Nombre d'elements dans la file.
-	private Etat last;	//Dernier element de la liste
+	private Node last;	//Dernier element de la liste
 	
 	//Indique si la file est vide
 	public boolean empty() 
@@ -47,7 +47,7 @@ public class LinkedListQueue
 		 if ( size > 1){
 			//le deuxieme element est maitenant considere comme le premier
 			 last.getNext().data.resetMostRecently();
-			Etat first = last.getNext().getNext();
+			Node first = last.getNext().getNext();
 			last.setNext(first);
 			size--;
 		}
@@ -57,16 +57,16 @@ public class LinkedListQueue
 		}
 	}
 
-	public void push(Node item)
+	public void push(Etat item)
 	{
 
-		Etat latest= new Etat (item, null);
+		Node latest= new Node (item, null);
 		if (item.isSetMostRecently()){
-			Etat tmp = last;
+			Node tmp = last;
 			while (tmp.getNext().data != item){
 				tmp = tmp.getNext();
 			}
-			Etat test = tmp.getNext();
+			Node test = tmp.getNext();
 			tmp.setNext(test.getNext());
 			test.setNext(last.getNext());
 			last.setNext(test);

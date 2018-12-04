@@ -57,13 +57,12 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 File fichier = new File(path.getText());
                 if (fichier.exists()) {
+                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f, path.getText(),g) ;
                     f.setVisible(true);
                     path.setVisible(false);
                     enter.setVisible(false);
                     displayLabels.setVisible(true);
                     labelPath.setText("enter text:");
-                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f, path.getText(),g) ;
-
                 }
             }
         });
