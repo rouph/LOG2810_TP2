@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 public class Main {
 
     private Graph g = new Graph();
@@ -25,6 +27,8 @@ public class Main {
         });
         displayLabels.setVisible(false);
         JTextField f = new JTextField(10);
+        f.setMaximumSize(new Dimension(200, 25));
+
         f.setVisible(false);
 
         JPanel p = new JPanel();
@@ -58,9 +62,11 @@ public class Main {
                     path.setVisible(false);
                     enter.setVisible(false);
                     displayLabels.setVisible(true);
-                    labelPath.setText("Enter text:");
+                    labelPath.setText(" Enter text: ");
                     AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, path.getText(),g) ;
-
+                }
+                else{
+                    showMessageDialog(null, "Entrer un Path correct");
                 }
             }
         });
@@ -170,14 +176,16 @@ class AutoSuggestor {
 
     public String getCurrentlyTypedWord() {
         String text = textField.getText();
+
         String wordBeingTyped = "";
         if (text.contains(" ")) {
             int tmp = text.lastIndexOf(" ");
-            if (tmp >= currentIndexOfSpace) {
+            if (text.lastIndexOf(" ") < text.length()) {
                 currentIndexOfSpace = tmp;
                 wordBeingTyped = text.substring(text.lastIndexOf(" "));
             }
         } else {
+            currentIndexOfSpace = text.lastIndexOf(" ");
             wordBeingTyped = text;
         }
         return wordBeingTyped.trim();

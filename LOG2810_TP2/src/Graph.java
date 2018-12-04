@@ -80,13 +80,15 @@ public class Graph {
     }
 
     public Etat getStartingEtat(String s) {
-        if (s.charAt(0) == start.getName() && s.length() == 1) {
-            return start;
-        }
-        for (Etat next : start.getNexts()) {
-            Etat temp = getStartingEtat(next, s);
-            if (temp != null)
-                return temp;
+        if(!s.isEmpty()) {
+            if (s.charAt(0) == start.getName() && s.length() == 1) {
+                return start;
+            }
+            for (Etat next : start.getNexts()) {
+                Etat temp = getStartingEtat(next, s);
+                if (temp != null)
+                    return temp;
+            }
         }
         return null;
     }
@@ -106,10 +108,13 @@ public class Graph {
     }
 
     public void addUsed(String e) {
-        Etat last = getStartingEtat(e);
-        if (last != null) {
-            last.addUsed();
-            addMostUsed(last);
+        String[] str_array = e.split(" ");
+        for(String mot : str_array){
+            Etat last = getStartingEtat(mot);
+                if (last != null) {
+                    last.addUsed();
+                    addMostUsed(last);
+                }
         }
     }
 
