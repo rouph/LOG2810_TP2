@@ -57,12 +57,12 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 File fichier = new File(path.getText());
                 if (fichier.exists()) {
-                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f, path.getText(),g) ;
+                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, path.getText(),g) ;
                     f.setVisible(true);
                     path.setVisible(false);
                     enter.setVisible(false);
                     displayLabels.setVisible(true);
-                    labelPath.setText("enter text:");
+                    labelPath.setText("Enter text:");
                 }
             }
         });
@@ -106,13 +106,11 @@ class AutoSuggestor {
         }
     };
     private final Color suggestionsTextColor;
-    private final Color suggestionFocusedColor;
 
-    public AutoSuggestor(JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity, String File,Graph g) {
+    public AutoSuggestor(JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor , String File,Graph g) {
         this.textField = textField;
         this.suggestionsTextColor = textColor;
         this.container = mainWindow;
-        this.suggestionFocusedColor = suggestionFocusedColor;
         this.g = g;
         this.textField.getDocument().addDocumentListener(documentListener);
         this.textField.addActionListener(new ActionListener() {
@@ -131,7 +129,7 @@ class AutoSuggestor {
         tH = 0;
 
         autoSuggestionPopUpWindow = new JWindow(mainWindow);
-        autoSuggestionPopUpWindow.setOpacity(opacity);
+        autoSuggestionPopUpWindow.setOpacity(1);
 
         suggestionsPanel = new JPanel();
         suggestionsPanel.setLayout(new GridLayout(0, 1));
@@ -162,9 +160,9 @@ class AutoSuggestor {
     private void checkForAndShowSuggestions() {
         typedWord = getCurrentlyTypedWord();
 
-        suggestionsPanel.removeAll();//remove previos words/jlabels that were added
+        suggestionsPanel.removeAll();
 
-        //used to calcualte size of JWindow as new Jlabels are added
+
         tW = 0;
         tH = 0;
         setDictionary(g.displayFiniteState(typedWord,false));
@@ -182,14 +180,14 @@ class AutoSuggestor {
     }
 
     protected void addWordToSuggestions(String word) {
-        SuggestionLabel suggestionLabel = new SuggestionLabel(word, suggestionFocusedColor, suggestionsTextColor, this);
+        SuggestionLabel suggestionLabel = new SuggestionLabel(word, suggestionsTextColor, this);
 
         calculatePopUpWindowSize(suggestionLabel);
 
         suggestionsPanel.add(suggestionLabel);
     }
 
-    public String getCurrentlyTypedWord() {//get newest word after last white spaceif any or the first word if no white spaces
+    public String getCurrentlyTypedWord() {
         String text = textField.getText();
         String wordBeingTyped = "";
         if (text.contains(" ")) {
@@ -205,7 +203,6 @@ class AutoSuggestor {
     }
 
     private void calculatePopUpWindowSize(JLabel label) {
-        //so we can size the JWindow correctly
         if (tW < label.getPreferredSize().width) {
             tW = label.getPreferredSize().width;
         }
@@ -218,8 +215,8 @@ class AutoSuggestor {
         autoSuggestionPopUpWindow.setSize(tW, tH);
         autoSuggestionPopUpWindow.setVisible(true);
 
-        int windowX = 200;
-        int windowY = 200;
+        int windowX = 0;
+        int windowY = 0;
 
         windowX = container.getX() + textField.getX() + 5;
         if (suggestionsPanel.getHeight() > autoSuggestionPopUpWindow.getMinimumSize().height) {
@@ -238,7 +235,7 @@ class AutoSuggestor {
     public void setDictionary(ArrayList<String> words) {
         dictionary.clear();
         if (words == null) {
-            return;//so we can call constructor with null value for dictionary without exception thrown
+            return;
         }
         for (String word : words) {
             dictionary.add(word);
@@ -271,19 +268,17 @@ class AutoSuggestor {
 
 class SuggestionLabel extends JLabel {
 
-    private boolean focused = false;
     private final JWindow autoSuggestionsPopUpWindow;
     private final JTextField textField;
     private final AutoSuggestor autoSuggestor;
-    private Color suggestionsTextColor, suggestionBorderColor;
+    private Color suggestionsTextColor;
 
-    public SuggestionLabel(String string, final Color borderColor, Color suggestionsTextColor, AutoSuggestor autoSuggestor) {
+    public SuggestionLabel(String string, Color suggestionsTextColor, AutoSuggestor autoSuggestor) {
         super(string);
 
         this.suggestionsTextColor = suggestionsTextColor;
         this.autoSuggestor = autoSuggestor;
         this.textField = autoSuggestor.getTextField();
-        this.suggestionBorderColor = borderColor;
         this.autoSuggestionsPopUpWindow = autoSuggestor.getAutoSuggestionPopUpWindow();
 
         initComponent();
@@ -304,29 +299,8 @@ class SuggestionLabel extends JLabel {
             }
         });
 
-        getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), "Enter released");
-        getActionMap().put("Enter released", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                replaceWithSuggestedText();
-                autoSuggestionsPopUpWindow.setVisible(false);
-            }
-        });
     }
 
-    public void setFocused(boolean focused) {
-        if (focused) {
-            setBorder(new LineBorder(suggestionBorderColor));
-        } else {
-            setBorder(null);
-        }
-        repaint();
-        this.focused = focused;
-    }
-
-    public boolean isFocused() {
-        return focused;
-    }
 
     private void replaceWithSuggestedText() {
         String suggestedWord = getText();
