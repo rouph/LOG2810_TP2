@@ -3,7 +3,6 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -11,16 +10,13 @@ public class Main {
 
     private Graph g = new Graph();
     public Main() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = screenSize.height * 2 / 3;
-        int width = screenSize.width * 2 / 3;
-
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(300, 200));
+        frame.setPreferredSize(new Dimension(400, 130));
         JTextField path = new JTextField(10);
-        JButton enter = new JButton("enter");
-        JButton displayLabels = new JButton("Labels");
+        path.setMaximumSize(new Dimension(200, 25));
+        JButton enter = new JButton("Entrer");
+        JButton displayLabels = new JButton("Afficher Labels");
         displayLabels.setPreferredSize(displayLabels.getPreferredSize());
         displayLabels.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -37,7 +33,7 @@ public class Main {
         JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
 
-        JLabel labelPath = new JLabel("Enter Path: ");
+        JLabel labelPath = new JLabel("Entrer le Path de votre lexique: ");
         p.add(labelPath);
 
         p.add(path);
@@ -53,16 +49,18 @@ public class Main {
         frame.pack();
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
+
         enter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 File fichier = new File(path.getText());
                 if (fichier.exists()) {
-                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, path.getText(),g) ;
                     f.setVisible(true);
                     path.setVisible(false);
                     enter.setVisible(false);
                     displayLabels.setVisible(true);
                     labelPath.setText("Enter text:");
+                    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, path.getText(),g) ;
+
                 }
             }
         });
@@ -129,8 +127,6 @@ class AutoSuggestor {
         tH = 0;
 
         autoSuggestionPopUpWindow = new JWindow(mainWindow);
-        autoSuggestionPopUpWindow.setOpacity(1);
-
         suggestionsPanel = new JPanel();
         suggestionsPanel.setLayout(new GridLayout(0, 1));
         suggestionsPanel.setBackground(popUpBackground);
@@ -138,30 +134,16 @@ class AutoSuggestor {
 
     }
 
-
-
     private void setFocusToTextField() {
         container.toFront();
         container.requestFocusInWindow();
         textField.requestFocusInWindow();
     }
 
-    public ArrayList<SuggestionLabel> getAddedSuggestionLabels() {
-        ArrayList<SuggestionLabel> sls = new ArrayList<>();
-        for (int i = 0; i < suggestionsPanel.getComponentCount(); i++) {
-            if (suggestionsPanel.getComponent(i) instanceof SuggestionLabel) {
-                SuggestionLabel sl = (SuggestionLabel) suggestionsPanel.getComponent(i);
-                sls.add(sl);
-            }
-        }
-        return sls;
-    }
-
     private void checkForAndShowSuggestions() {
         typedWord = getCurrentlyTypedWord();
 
         suggestionsPanel.removeAll();
-
 
         tW = 0;
         tH = 0;
@@ -175,7 +157,6 @@ class AutoSuggestor {
             fillSuggestionBox();
             showPopUpWindow();
             setFocusToTextField();
-
         }
     }
 
@@ -230,6 +211,7 @@ class AutoSuggestor {
         autoSuggestionPopUpWindow.revalidate();
         autoSuggestionPopUpWindow.repaint();
 
+
     }
 
     public void setDictionary(ArrayList<String> words) {
@@ -246,22 +228,22 @@ class AutoSuggestor {
         return autoSuggestionPopUpWindow;
     }
 
-    public Window getContainer() {
-        return container;
-    }
+
 
     public JTextField getTextField() {
         return textField;
     }
 
-    public void addToDictionary(String word) {
-        dictionary.add(word);
-    }
+
 
     void fillSuggestionBox() {
-
+        int counter = 0;
         for (String word : dictionary) {
-                addWordToSuggestions(word);
+            if(counter == 50) {
+                break;
+            }
+            addWordToSuggestions(word);
+            counter++;
             }
     }
 }
@@ -308,6 +290,6 @@ class SuggestionLabel extends JLabel {
         String typedWord = autoSuggestor.getCurrentlyTypedWord();
         String t = text.substring(0, text.lastIndexOf(typedWord));
         String tmp = t + text.substring(text.lastIndexOf(typedWord)).replace(typedWord, suggestedWord);
-        textField.setText(tmp + " ");
+        textField.setText(tmp +" ");
     }
 }

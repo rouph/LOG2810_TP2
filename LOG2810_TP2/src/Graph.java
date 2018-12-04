@@ -67,10 +67,9 @@ public class Graph {
     public void displayFiniteState(String e, Etat Etat, boolean withNbrUsed) {
         if (Etat != null) {
             e += Etat.getName();
-
             if (Etat.getFiniteState()) {
                 if (withNbrUsed)
-                    displayLabels.append(e + " is used " + Etat.getUsed() + " time , usedLabel: " + Etat.isSetMostRecently() +"\n");
+                    displayLabels.append(e + ":  Fréquence: " + Etat.getUsed() + " | Récemment Utilisé: " + Etat.isSetMostRecently() +"\n");
                 else
                     words.add(e);
             }
