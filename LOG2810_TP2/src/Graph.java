@@ -12,7 +12,7 @@ public class Graph {
     private LinkedListQueue mostUsedNodes = new LinkedListQueue();
     private boolean hasPrevious = false;
     private Node start = new Node();
-    private String displayLabels ="";
+    private StringBuilder displayLabels = new StringBuilder();
     private ArrayList<String> words = new ArrayList<>();
 
     public Graph() {
@@ -90,12 +90,12 @@ public class Graph {
             e += node.getName();
 
             if (node.getFiniteState()) {
-               // String temp = e;
+               //String temp = e;
                 if (withNbrUsed)
-                    displayLabels += e + " is used " + node.getUsed() + " time and mos recently usedLabel: " + node.isSetMostRecently() +"\n";
+                    displayLabels.append(e + " is used " + node.getUsed() + " time , usedLabel: " + node.isSetMostRecently() +"\n");
                 else
                     words.add(e);
-                //e = temp;
+               // e = temp;
             }
             for (Node next : node.getNexts()) {
                 displayFiniteState(e, next, withNbrUsed);
@@ -144,11 +144,11 @@ public class Graph {
     public void showLabels() {
         displayFiniteState(" ", true);
         JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
         JTextArea textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
         frame.getContentPane().add(scrollPane);
-        textArea.setText(displayLabels);
+        textArea.setText(displayLabels.toString());
         frame.pack();
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
