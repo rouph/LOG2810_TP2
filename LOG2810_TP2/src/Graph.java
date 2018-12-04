@@ -144,11 +144,12 @@ public class Graph {
     public void showLabels() {
         displayFiniteState(" ", true);
         JFrame frame = new JFrame();
-        //frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
         JTextArea textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
         frame.getContentPane().add(scrollPane);
         textArea.setText(displayLabels.toString());
+        displayLabels.setLength(0);
+        displayLabels = new StringBuilder();
         frame.pack();
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);

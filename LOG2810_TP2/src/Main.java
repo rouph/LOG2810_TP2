@@ -17,10 +17,11 @@ public class Main {
 
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       // frame.setPreferredSize(new Dimension(500, 500));
+        frame.setPreferredSize(new Dimension(300, 200));
         JTextField path = new JTextField(10);
         JButton enter = new JButton("enter");
-        JButton displayLabels = new JButton("displayLabels");
+        JButton displayLabels = new JButton("Labels");
+        displayLabels.setPreferredSize(displayLabels.getPreferredSize());
         displayLabels.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 g.showLabels();
@@ -30,27 +31,25 @@ public class Main {
         JTextField f = new JTextField(10);
         f.setVisible(false);
 
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.insets = new Insets(10, 10, 10, 10);
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+        JPanel p2 = new JPanel();
+        JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+
 
         JLabel labelPath = new JLabel("Enter Path: ");
+        p.add(labelPath);
 
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        p.add(labelPath, constraints);
-
-        constraints.gridx = 1;
-        p.add(path,constraints);
-        p.add(f,constraints);
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        p.add(enter,constraints);
-        p.add(displayLabels,constraints);
-        frame.add(p);
-
+        p.add(path);
+        p.add(f);
+        p2.add(enter);
+        p2.add(displayLabels);
+        sp.add(p);
+        sp.add(p2);
+        sp.setResizeWeight(0.7);
+        sp.setEnabled(false);
+        sp.setDividerSize(0);
+        frame.add(sp);
         frame.pack();
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
@@ -60,8 +59,8 @@ public class Main {
                 if (fichier.exists()) {
                     f.setVisible(true);
                     path.setVisible(false);
-                    displayLabels.setVisible(true);
                     enter.setVisible(false);
+                    displayLabels.setVisible(true);
                     labelPath.setText("enter text:");
                     AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 1f, path.getText(),g) ;
 
