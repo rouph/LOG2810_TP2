@@ -7,21 +7,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
+
     private LinkedListQueue mostUsedEtats = new LinkedListQueue();
     private Etat start = new Etat();
     private StringBuilder displayLabels = new StringBuilder();
     private ArrayList<String> words = new ArrayList<>();
     private JFrame labelframe = new JFrame();
 
+
     public Graph() {
     }
 
+
     public boolean addChild(Etat n, String s) {
+
 
         boolean finitestate = (s.length() == 1);
         boolean added = false;
         if (s.length() > 0) {
-
             for (Etat next : n.getNexts()) {
                 if (next.getName() == s.charAt(0))
                     added = addChild(next, s.substring(1));
@@ -31,11 +34,13 @@ public class Graph {
                 addChild(n.getNexts().get(n.getNexts().size() - 1), s.substring(1));
                 return true;
             }
+
         }
         return added;
     }
 
     public void readFromFile(String filePath) {
+
         try {
             File fichier = new File(filePath);
             BufferedReader data = new BufferedReader(new FileReader(fichier));
@@ -47,6 +52,7 @@ public class Graph {
             e.printStackTrace();
         }
     }
+
 
 
     public ArrayList<String> displayFiniteState(String e, boolean withNbrUsed) {
@@ -90,6 +96,7 @@ public class Graph {
         return null;
     }
 
+
     public Etat getStartingEtat(Etat n, String s) {
         if (n.getName() == s.charAt(0) && s.length() > 1) {
             Etat toReturn = null;
@@ -112,6 +119,7 @@ public class Graph {
                 if (last != null) {
                     last.addUsed();
                     addMostUsed(last);
+
                 }
         }
     }
