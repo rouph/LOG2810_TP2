@@ -39,7 +39,7 @@ class SuggestionLabel extends JLabel {
 
     private void replaceWithSuggestedText() {
         String suggestedWord = getText();
-        String text = textField.getText();
+        String text = textField.getText().trim();
         String typedWord = autoSuggestor.getCurrentlyTypedWord();
         String t = text.substring(0, text.lastIndexOf(typedWord));
         String tmp = t + text.substring(text.lastIndexOf(typedWord)).replace(typedWord, suggestedWord);

@@ -97,9 +97,19 @@ class AutoSuggestor {
 
     public String getCurrentlyTypedWord() {
         String text = textField.getText();
-        if(textField.getCaretPosition() < text.length() )
-            text = text.substring(0,textField.getCaretPosition()+1);
-        int trimLocation = text.lastIndexOf(" ");
+        int debug = textField.getCaretPosition();
+        int debug2 = text.length();
+        int trimLocation;
+        if(textField.getCaretPosition()  < text.length()- 1 ) {
+            text = text.substring(0, textField.getCaretPosition() + 1 );
+             trimLocation = text.trim().lastIndexOf(" ");
+        }
+        else if (textField.getCaretPosition() > text.trim().length()){
+            trimLocation = text.lastIndexOf(" ");
+        }
+        else {
+            trimLocation = text.trim().lastIndexOf(" ");
+        }
 
         String wordBeingTyped = "";
         if (trimLocation != -1) {
