@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -6,117 +7,139 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
-    private List<Node> nodes = new ArrayList<>();
-    private List<Node> finiteNodes = new ArrayList<>();
-    private Node start = new Node();
+
+    private LinkedListQueue mostUsedEtats = new LinkedListQueue();
+    private Etat start = new Etat();
+    private StringBuilder displayLabels = new StringBuilder();
+    private ArrayList<String> words = new ArrayList<>();
+    private JFrame labelframe = new JFrame();
+
 
     public Graph() {
     }
 
-    public boolean samePrevious(Node i, Node c) {
 
-        return i.getString().equals(c.getString());
-    }
+    public boolean addChild(Etat n, String s) {
 
-    public void addChild(Node c) {
 
-        for (Node node : nodes) {
-            if (samePrevious(node, c))
-                return;
+        boolean finitestate = (s.length() == 1);
+        boolean added = false;
+        if (s.length() > 0) {
+            for (Etat next : n.getNexts()) {
+                if (next.getName() == s.charAt(0))
+                    added = addChild(next, s.substring(1));
+            }
+            if (!added) {
+                n.addNext(new Etat(s.charAt(0), finitestate));
+                addChild(n.getNexts().get(n.getNexts().size() - 1), s.substring(1));
+                return true;
+            }
+
         }
-        nodes.add(c);
+        return added;
     }
 
     public void readFromFile(String filePath) {
 
         try {
-            start.setPrevious(start);
             File fichier = new File(filePath);
             BufferedReader data = new BufferedReader(new FileReader(fichier));
             String lexique;
             while ((lexique = data.readLine()) != null) {
-                List<Node> tmpNodes = new ArrayList<>();
-                for (int i = 0; i < lexique.length(); i++) {
-                    if (i == lexique.length() - 1) {
-                        Node finiteNode = new Node(tmpNodes.get(i - 1).getString() + lexique.charAt(i), true);
-                        tmpNodes.add(finiteNode);
-                        if (i != 0) {
-                            finiteNode.setPrevious(tmpNodes.get(i - 1));
-                        } else
-                            finiteNode.setPrevious(start);
-
-                        addChild(finiteNode);
-                        finiteNodes.add(finiteNode);
-                    } else {
-                        Node node = new Node();
-                        if (i == 0) {
-                            node = new Node(start.getString() + lexique.charAt(i), false);
-                        } else {
-                            node = new Node(tmpNodes.get(i - 1).getString() + lexique.charAt(i), false);
-                        }
-                        tmpNodes.add(node);
-                        if (i != 0) {
-                            node.setPrevious(tmpNodes.get(i - 1));
-                        } else
-                            node.setPrevious(start);
-
-                        addChild(node);
-                    }
-                }
+                addChild(start, lexique);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void displayAutomate() {
 
-        for (Node i : nodes)
-            System.out.println(i.getString());
-    }
 
-    public void displayWords() {
-
-        for (Node i : nodes) {
-            if (i.getFiniteState())
-                System.out.println(i.getString());
+    public ArrayList<String> displayFiniteState(String e, boolean withNbrUsed) {
+        words.clear();
+        if (!e.isEmpty()) {
+            Etat starte = getStartingEtat(e);
+            if (starte != null)
+                for (Etat next : starte.getNexts()) {
+                    displayFiniteState(e, next, withNbrUsed);
+                }
         }
+        return words;
     }
 
-    public void displayPrevious(){
-
-        for (Node i : nodes){
-            System.out.println(i.getPrevious().getString());
-        }
-    }
-
-    public List<String> displayFiniteState(String e) {
-
-        Node nodeOfString = new Node();
-        List<String> FiniteStateList = new ArrayList<>();
-        for (Node i : nodes) {
-            if (i.getString().equals(e)) {
-                nodeOfString = i;
-                break;
+    public void displayFiniteState(String e, Etat Etat, boolean withNbrUsed) {
+        if (Etat != null) {
+            e += Etat.getName();
+            if (Etat.getFiniteState()) {
+                if (withNbrUsed)
+                    displayLabels.append(e + ":  Fréquence: " + Etat.getUsed() + " | Récemment Utilisé: " + Etat.isSetMostRecently() +"\n");
+                else
+                    words.add(e);
+            }
+            for (Etat next : Etat.getNexts()) {
+                displayFiniteState(e, next, withNbrUsed);
             }
         }
-        if (!(nodeOfString.getString().equals(""))) {
-            int compt = 0;
-            for (Node j : finiteNodes) {
-                for (int i = 0; i < nodeOfString.getString().length(); i++) {
-                    if (nodeOfString.getString().length() <= j.getString().length()) {
-                        if (nodeOfString.getString().charAt(i) == j.getString().charAt(i)) {
-                            compt += 1;
-                        }
-                    }
-                }
-                if (compt == nodeOfString.getString().length()) {
-                    FiniteStateList.add(j.getString());
-                }
-                compt = 0;
-            }
-        }
-        return FiniteStateList;
     }
 
+    public Etat getStartingEtat(String s) {
+        if(!s.isEmpty()) {
+            if (s.charAt(0) == start.getName() && s.length() == 1) {
+                return start;
+            }
+            for (Etat next : start.getNexts()) {
+                Etat temp = getStartingEtat(next, s);
+                if (temp != null)
+                    return temp;
+            }
+        }
+        return null;
+    }
+
+
+    public Etat getStartingEtat(Etat n, String s) {
+        if (n.getName() == s.charAt(0) && s.length() > 1) {
+            Etat toReturn = null;
+            for (Etat next : n.getNexts()) {
+                toReturn = getStartingEtat(next, s.substring(1));
+                if (toReturn != null) return toReturn;
+            }
+        } else if (n.getName() == s.charAt(0) && s.length() == 1) {
+            return n;
+        }
+        return null;
+
+    }
+
+    public void addUsed(String e) {
+        e.replace('.',' ');
+        String[] str_array = e.split(" ");
+        for(String mot : str_array){
+            Etat last = getStartingEtat(mot);
+                if (last != null) {
+                    last.addUsed();
+                    addMostUsed(last);
+
+                }
+        }
+    }
+
+    public void addMostUsed(Etat item) {
+        mostUsedEtats.push(item);
+    }
+    public void showLabels() {
+        displayFiniteState(" ", true);
+        labelframe.dispose();
+        labelframe = new JFrame();
+        JTextArea textArea = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        labelframe.getContentPane().add(scrollPane);
+        textArea.setText(displayLabels.toString());
+        textArea.setCaretPosition(0);
+        displayLabels.setLength(0);
+        displayLabels = new StringBuilder();
+        labelframe.pack();
+        labelframe.setVisible(true);
+        labelframe.setLocationRelativeTo(null);
+    }
 }
