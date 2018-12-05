@@ -97,10 +97,14 @@ class AutoSuggestor {
 
     public String getCurrentlyTypedWord() {
         String text = textField.getText();
+        if(textField.getCaretPosition() < text.length() )
+            text = text.substring(0,textField.getCaretPosition()+1);
+        int trimLocation = text.lastIndexOf(" ");
+
         String wordBeingTyped = "";
-        if (text.contains(" ")) {
-            if (text.lastIndexOf(" ") < text.length()) {
-                wordBeingTyped = text.substring(text.lastIndexOf(" "));
+        if (trimLocation != -1) {
+            if (trimLocation < text.length()) {
+                wordBeingTyped = text.substring(trimLocation);
             }
         } else {
             wordBeingTyped = text;

@@ -105,6 +105,7 @@ public class Graph {
     }
 
     public void addUsed(String e) {
+        e.replace('.',' ');
         String[] str_array = e.split(" ");
         for(String mot : str_array){
             Etat last = getStartingEtat(mot);
